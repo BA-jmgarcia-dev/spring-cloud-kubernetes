@@ -1,0 +1,64 @@
+version: '3.9'
+services:
+  mysql8:
+    container_name: mysql8
+    image: mysql:8
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+    volumes:
+      - data-mysql:/var/lib/mysql
+    restart: always
+    networks:
+      - spring
+  
+  usuarios-service:
+    container_name: usuarios-service
+    image: juanmgsierra/usuarios
+    # build: 
+    #   context: ./
+    #   dockerfile: ./usuarios/Dockerfile
+    environment:
+      PORT: 8001
+      DB_HOST: mysql8:3306
+      DB_DATABASE: test
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      CURSOS_URL: cursos-service:8002
+    ports:
+      - "8001:8001"
+    networks:
+      - spring
+    depends_on:
+      - mysql8
+    restart: always
+      
+  cursos-service:
+    container_name: cursos-service
+    image: juanmgsierra/cursos
+    # build: 
+    #   context: ./
+    #   dockerfile: ./cursos/Dockerfile
+    environment:
+      PORT: 8002
+      DB_HOST: mysql8:3306
+      DB_DATABASE: test
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      USUARIOS_URL: usuarios-service:8001
+    ports:
+      - "8002:8002"
+    networks:
+      - spring
+    depends_on:
+      - mysql8
+    restart: always
+
+volumes:
+  data-mysql:
+    name: data-mysql
+networks:
+  spring:
+    name: spring
