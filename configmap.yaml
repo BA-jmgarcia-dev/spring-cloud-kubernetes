@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cursos-service
+data:
+  port: "8002"
+  usuarios_url: usuario-service:8001
+---
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: usuario-service
+  data:
+    port: "8001"
+    cursos_url: cursos-service:8002

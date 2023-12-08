@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cursos-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cursos-service
+  template:
+    metadata:
+      labels:
+        app: cursos-service
+    spec:
+      containers:
+      - image: juanmgsierra/cursos
+        name: cursos
+        ports:
+          - containerPort: 8002
+        env:
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                name: cursos-service
+                key: port
+          - name: USUARIOS_URL
+            valueFrom:
+              configMapKeyRef:
+                name: cursos-service
+                key: usuarios_url
